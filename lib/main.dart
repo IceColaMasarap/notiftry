@@ -43,6 +43,12 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
   String version = "1.0.0";
   bool isWiFiConnected = true;
   // Alert levels
+
+  // Create controllers
+  final TextEditingController deviceNameController = TextEditingController();
+  final TextEditingController wifiSSIDController = TextEditingController();
+  final TextEditingController versionController = TextEditingController();
+
   final Map<String, Color> alertColors = {
     'Normal': Colors.green,
     'Yellow Alert': Colors.yellow,
@@ -83,19 +89,16 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
       return 60 + _random.nextInt(41); // 60-100 BPM
     } else if (status == 'Yellow Alert') {
       return _random.nextBool()
-          ? 50 +
-              _random.nextInt(10) // 50-59 BPM (low)
+          ? 50 + _random.nextInt(10) // 50-59 BPM (low)
           : 101 + _random.nextInt(10); // 101-110 BPM (high)
     } else if (status == 'Orange Alert') {
       return _random.nextBool()
-          ? 40 +
-              _random.nextInt(10) // 40-49 BPM (low)
+          ? 40 + _random.nextInt(10) // 40-49 BPM (low)
           : 111 + _random.nextInt(20); // 111-130 BPM (high)
     } else {
       // Red Alert
       return _random.nextBool()
-          ? 20 +
-              _random.nextInt(20) // 20-39 BPM (very low)
+          ? 20 + _random.nextInt(20) // 20-39 BPM (very low)
           : 131 + _random.nextInt(70); // 131-200 BPM (very high)
     }
   }
@@ -116,22 +119,16 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
       return 36.1 + _random.nextDouble() * 1.1; // 36.1-37.2°C
     } else if (status == 'Yellow Alert') {
       return _random.nextBool()
-          ? 35.0 +
-              _random.nextDouble() *
-                  1.0 // 35.0-36.0°C (low)
+          ? 35.0 + _random.nextDouble() * 1.0 // 35.0-36.0°C (low)
           : 37.3 + _random.nextDouble() * 0.7; // 37.3-38.0°C (high)
     } else if (status == 'Orange Alert') {
       return _random.nextBool()
-          ? 34.0 +
-              _random.nextDouble() *
-                  0.9 // 34.0-34.9°C (low)
+          ? 34.0 + _random.nextDouble() * 0.9 // 34.0-34.9°C (low)
           : 38.1 + _random.nextDouble() * 0.9; // 38.1-39.0°C (high)
     } else {
       // Red Alert
       return _random.nextBool()
-          ? 30.0 +
-              _random.nextDouble() *
-                  4.0 // 30.0-33.9°C (very low)
+          ? 30.0 + _random.nextDouble() * 4.0 // 30.0-33.9°C (very low)
           : 39.1 + _random.nextDouble() * 2.9; // 39.1-42.0°C (very high)
     }
   }
@@ -223,382 +220,421 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    deviceNameController.text = deviceName;
+    wifiSSIDController.text = wifiSSID;
+    versionController.text = version;
+  }
+
+  @override
+  void dispose() {
+    deviceNameController.dispose();
+    wifiSSIDController.dispose();
+    versionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Wrist Wise Simulator')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'Simulate Health Data',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Device Info',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Device Name',
-                      ),
-                      controller: TextEditingController(text: deviceName),
-                      onChanged: (value) {
-                        deviceName = value;
-                      },
-                    ),
-
-                    const SizedBox(height: 8),
-                    Text('Battery Percentage: ${batteryPercentage.round()}%'),
-                    Slider(
-                      value: batteryPercentage,
-                      min: 0,
-                      max: 100,
-                      divisions: 100,
-                      label: batteryPercentage.round().toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          batteryPercentage = value;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 8),
-                    TextField(
-                      decoration: const InputDecoration(labelText: 'WiFi SSID'),
-                      controller: TextEditingController(text: wifiSSID),
-                      onChanged: (value) {
-                        wifiSSID = value;
-                      },
-                    ),
-
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Is Powered On?'),
-                        Switch(
-                          value: isPoweredOn,
-                          onChanged: (value) {
-                            setState(() {
-                              isPoweredOn = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 8),
-                    TextField(
-                      decoration: const InputDecoration(labelText: 'Version'),
-                      controller: TextEditingController(text: version),
-                      onChanged: (value) {
-                        version = value;
-                      },
-                    ),
-
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Is WiFi Connected?'),
-                        Switch(
-                          value: isWiFiConnected,
-                          onChanged: (value) {
-                            setState(() {
-                              isWiFiConnected = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Simulate Health Data',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-            ),
+              const SizedBox(height: 16),
+              // Use Expanded with SingleChildScrollView to allow scrolling
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Device Info',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
 
-            // Heart Rate
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Heart Rate',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButton<String>(
-                      isExpanded: true,
-                      value: heartRateStatus,
-                      items:
-                          alertColors.keys.map((String value) {
-                            String rangeText = '';
-                            if (value == 'Normal') {
-                              rangeText = '(60-100 bpm)';
-                            } else if (value == 'Yellow Alert') {
-                              rangeText = '(50-59 or 101-110 bpm)';
-                            } else if (value == 'Orange Alert') {
-                              rangeText = '(40-49 or 111-130 bpm)';
-                            } else if (value == 'Red Alert') {
-                              rangeText = '(<40 or >130 bpm)';
-                            }
+                              TextField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Device Name',
+                                ),
+                                controller: deviceNameController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    deviceName = value;
+                                  });
+                                },
+                              ),
 
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
+                              const SizedBox(height: 8),
+                              Text('Battery Percentage: ${batteryPercentage.round()}%'),
+                              Slider(
+                                value: batteryPercentage,
+                                min: 0,
+                                max: 100,
+                                divisions: 100,
+                                label: batteryPercentage.round().toString(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    batteryPercentage = value;
+                                  });
+                                },
+                              ),
+
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration: const InputDecoration(labelText: 'WiFi SSID'),
+                                controller: wifiSSIDController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    wifiSSID = value;
+                                  });
+                                },
+                              ),
+
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: BoxDecoration(
-                                      color: alertColors[value],
-                                      shape: BoxShape.circle,
-                                    ),
+                                  const Text('Is Powered On?'),
+                                  Switch(
+                                    value: isPoweredOn,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isPoweredOn = value;
+                                      });
+                                    },
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text('$value $rangeText')),
                                 ],
                               ),
-                            );
-                          }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          heartRateStatus = newValue!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            // SPO2
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'SPO2',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButton<String>(
-                      isExpanded: true,
-                      value: spo2Status,
-                      items:
-                          ['Normal', 'Yellow Alert', 'Red Alert'].map((
-                            String value,
-                          ) {
-                            String rangeText = '';
-                            if (value == 'Normal') {
-                              rangeText = '(95-100%)';
-                            } else if (value == 'Yellow Alert') {
-                              rangeText = '(90-94%)';
-                            } else if (value == 'Red Alert') {
-                              rangeText = '(<90%)';
-                            }
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration: const InputDecoration(labelText: 'Version'),
+                                controller: versionController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    version = value;
+                                  });
+                                },
+                              ),
 
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: BoxDecoration(
-                                      color: alertColors[value],
-                                      shape: BoxShape.circle,
-                                    ),
+                                  const Text('Is WiFi Connected?'),
+                                  Switch(
+                                    value: isWiFiConnected,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isWiFiConnected = value;
+                                      });
+                                    },
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text('$value $rangeText')),
                                 ],
                               ),
-                            );
-                          }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          spo2Status = newValue!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Temperature
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Temperature',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButton<String>(
-                      isExpanded: true,
-                      value: temperatureStatus,
-                      items:
-                          alertColors.keys.map((String value) {
-                            String rangeText = '';
-                            if (value == 'Normal') {
-                              rangeText = '(36.1-37.2°C)';
-                            } else if (value == 'Yellow Alert') {
-                              rangeText = '(35.0-36.0 or 37.3-38.0°C)';
-                            } else if (value == 'Orange Alert') {
-                              rangeText = '(34.0-34.9 or 38.1-39.0°C)';
-                            } else if (value == 'Red Alert') {
-                              rangeText = '(<34.0 or >39.0°C)';
-                            }
-
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: BoxDecoration(
-                                      color: alertColors[value],
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text('$value $rangeText')),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          temperatureStatus = newValue!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Fall Detection
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Fall Detection',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: fallDetected ? Colors.red : Colors.green,
-                            shape: BoxShape.circle,
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(fallDetected ? 'Yes' : 'No'),
-                        const SizedBox(width: 8),
-                        Switch(
-                          value: fallDetected,
-                          activeColor: Colors.red,
-                          onChanged: (bool value) {
-                            setState(() {
-                              fallDetected = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const Spacer(),
-
-            // Preview Card
-            Card(
-              color: Colors.grey[200],
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Data Preview',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Heart Rate: ${generateHeartRate(heartRateStatus)} bpm (${heartRateStatus})',
-                    ),
-                    Text('SPO2: ${generateSpo2(spo2Status)}% (${spo2Status})'),
-                    Text(
-                      'Temperature: ${generateTemperature(temperatureStatus).toStringAsFixed(1)}°C (${temperatureStatus})',
-                    ),
-                    Text('Fall Detected: ${fallDetected ? "Yes" : "No"}'),
-                  ],
+
+                      const SizedBox(height: 8),
+
+                      // Heart Rate
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Heart Rate',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButton<String>(
+                                isExpanded: true,
+                                value: heartRateStatus,
+                                items: alertColors.keys.map((String value) {
+                                  String rangeText = '';
+                                  if (value == 'Normal') {
+                                    rangeText = '(60-100 bpm)';
+                                  } else if (value == 'Yellow Alert') {
+                                    rangeText = '(50-59 or 101-110 bpm)';
+                                  } else if (value == 'Orange Alert') {
+                                    rangeText = '(40-49 or 111-130 bpm)';
+                                  } else if (value == 'Red Alert') {
+                                    rangeText = '(<40 or >130 bpm)';
+                                  }
+
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 16,
+                                          height: 16,
+                                          decoration: BoxDecoration(
+                                            color: alertColors[value],
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(child: Text('$value $rangeText')),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    heartRateStatus = newValue!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // SPO2
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'SPO2',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButton<String>(
+                                isExpanded: true,
+                                value: spo2Status,
+                                items: ['Normal', 'Yellow Alert', 'Red Alert'].map((
+                                  String value,
+                                ) {
+                                  String rangeText = '';
+                                  if (value == 'Normal') {
+                                    rangeText = '(95-100%)';
+                                  } else if (value == 'Yellow Alert') {
+                                    rangeText = '(90-94%)';
+                                  } else if (value == 'Red Alert') {
+                                    rangeText = '(<90%)';
+                                  }
+
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 16,
+                                          height: 16,
+                                          decoration: BoxDecoration(
+                                            color: alertColors[value],
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(child: Text('$value $rangeText')),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    spo2Status = newValue!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Temperature
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Temperature',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButton<String>(
+                                isExpanded: true,
+                                value: temperatureStatus,
+                                items: alertColors.keys.map((String value) {
+                                  String rangeText = '';
+                                  if (value == 'Normal') {
+                                    rangeText = '(36.1-37.2°C)';
+                                  } else if (value == 'Yellow Alert') {
+                                    rangeText = '(35.0-36.0 or 37.3-38.0°C)';
+                                  } else if (value == 'Orange Alert') {
+                                    rangeText = '(34.0-34.9 or 38.1-39.0°C)';
+                                  } else if (value == 'Red Alert') {
+                                    rangeText = '(<34.0 or >39.0°C)';
+                                  }
+
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 16,
+                                          height: 16,
+                                          decoration: BoxDecoration(
+                                            color: alertColors[value],
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(child: Text('$value $rangeText')),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    temperatureStatus = newValue!;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Fall Detection
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Fall Detection',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                      color: fallDetected ? Colors.red : Colors.green,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(fallDetected ? 'Yes' : 'No'),
+                                  const SizedBox(width: 8),
+                                  Switch(
+                                    value: fallDetected,
+                                    activeColor: Colors.red,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fallDetected = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Preview Card
+                      Card(
+                        color: Colors.grey[200],
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Data Preview',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Heart Rate: ${generateHeartRate(heartRateStatus)} bpm (${heartRateStatus})',
+                              ),
+                              Text('SPO2: ${generateSpo2(spo2Status)}% (${spo2Status})'),
+                              Text(
+                                'Temperature: ${generateTemperature(temperatureStatus).toStringAsFixed(1)}°C (${temperatureStatus})',
+                              ),
+                              Text('Fall Detected: ${fallDetected ? "Yes" : "No"}'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Send Data Button
-            ElevatedButton(
-              onPressed: sendAlerts,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+              
+              const SizedBox(height: 16),
+              
+              // Send Data Button - Keep outside the ScrollView
+              ElevatedButton(
+                onPressed: sendAlerts,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+                child: const Text(
+                  'Send Data',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-              child: const Text(
-                'Send Data',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

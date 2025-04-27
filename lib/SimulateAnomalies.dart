@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SimulateAnomaliesPage extends StatefulWidget {
+  const SimulateAnomaliesPage({super.key});
+
   @override
   _SimulateAnomaliesPageState createState() => _SimulateAnomaliesPageState();
 }
