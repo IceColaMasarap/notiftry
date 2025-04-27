@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "448583690916",
+    "firebase_url": "https://wrist-wise-dd98e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "wrist-wise-dd98e",
+    "storage_bucket": "wrist-wise-dd98e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448583690916:android:6d0dc1435e5d77f0461431",
+        "android_client_info": {
+          "package_name": "com.example.notiftry"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkZECYxqc41ZD46uQnxSaCdE5NyzeqamU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
